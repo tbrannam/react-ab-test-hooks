@@ -1,11 +1,6 @@
 import React, { useEffect, useState, ReactNode } from "react";
 import { render } from "react-dom";
-import {
-  Experiment,
-  Variant,
-  emitter,
-  experimentDebugger
-} from "@marvelapp/react-ab-test";
+import { emitter, experimentDebugger } from "@marvelapp/react-ab-test";
 
 import "./styles.css";
 
