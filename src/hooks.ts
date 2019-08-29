@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
 import { emitter } from "@marvelapp/react-ab-test";
 
+interface ExperimentHookResult {
+  experimentName: string;
+  variant: string;
+  emitWin: () => {};
+}
+
 export const useExperiment = (
   experimentName: string,
   defaultVariant?: string,
   userIdentifier?: string
-): { experimentName: string; variant: string; emitWin: () => {} } => {
+): ExperimentHookResult => {
+  useState(experimentName);
   const [currentVariant, setCurrentVariant] = useState(
     emitter.calculateActiveVariant(
       experimentName,
