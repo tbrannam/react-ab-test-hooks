@@ -1,5 +1,5 @@
-import React, { useEffect, useState, ReactNode } from "react";
-import { emitter, experimentDebugger } from "@marvelapp/react-ab-test";
+import { useEffect, useState } from "react";
+import { emitter } from "@marvelapp/react-ab-test";
 
 export const useExperiment = (
   experimentName: string,
@@ -16,7 +16,7 @@ export const useExperiment = (
 
   useEffect(() => {
     // experiment mounted
-    console.log("hook", currentVariant);
+    console.log("useEffect", currentVariant);
     emitter._emitPlay(experimentName, currentVariant);
     emitter._incrementActiveExperiments(experimentName);
 

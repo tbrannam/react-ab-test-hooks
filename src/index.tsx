@@ -27,7 +27,7 @@ const App = () => {
   // Hooks version of Experiments - references an experiment by name
   // and the variants supported within this context
   const { experimentName, variant, emitWin } = useExperiment("test", "exp3");
-  console.log(experimentName, variant);
+  console.log("useExperiment result: ", experimentName, variant);
   let experiment: ReactNode;
   switch (variant) {
     case "exp1":
