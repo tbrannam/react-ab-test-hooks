@@ -18,22 +18,23 @@ emitter.addWinListener((experimentName: string, variantName: string) => {
   );
 });
 
-const useExperiment = (experimentName: string, localVariants: string[]) => {
-  const [currentVariant, setCurrentVariant] = useState(
-    emitter.getActiveVariant(experimentName)
+const useExperiment = (
+  experimentName: string,
+  defaultVariant?: string
+): { experimentName: string; variant: string; emitWin: () => {} } => {
+  console.log("defaultVariant", defaultVariant);
+  const activeVariant = emitter.calculateActiveVariant(
+    experimentName,
+    undefined,
+    defaultVariant
   );
+  console.log("calc", activeVariant);
+  const [currentVariant, setCurrentVariant] = useState(activeVariant);
 
   useEffect(() => {
     // experiment mounted
     console.log("hook", currentVariant);
-    // should emitplay be called if the caller
-    // doesn't have one of these variants?
-    // if not - we don't need to pass localVariants
-    if (localVariants.indexOf(currentVariant) !== -1) {
-      console.log("play");
-      emitter._emitPlay(experimentName, currentVariant);
-    }
-
+    emitter._emitPlay(experimentName, currentVariant);
     emitter._incrementActiveExperiments(experimentName);
 
     const variantListener = emitter.addActiveVariantListener(
@@ -49,10 +50,10 @@ const useExperiment = (experimentName: string, localVariants: string[]) => {
       variantListener.remove();
       emitter._decrementActiveExperiments(experimentName);
     };
-  }, [experimentName, localVariants, currentVariant]);
+  }, [experimentName, currentVariant, defaultVariant]);
 
   return {
-    experimentName,
+    experimentName: experimentName,
     variant: currentVariant,
     emitWin: () => emitter.emitWin(experimentName)
   };
@@ -61,8 +62,8 @@ const useExperiment = (experimentName: string, localVariants: string[]) => {
 const App = () => {
   // Hooks version of Experiments - references an experiment by name
   // and the variants supported within this context
-  const { variant, emitWin } = useExperiment("test", ["exp1", "exp2"]);
-  // const label = variant === "exp1" ? "Experiment 1" : "Experiment 2";
+  const { experimentName, variant, emitWin } = useExperiment("test", "exp3");
+  console.log(experimentName, variant);
   let label: string;
   switch (variant) {
     case "exp1":
@@ -71,7 +72,6 @@ const App = () => {
     case "exp2":
       label = "experiment 2";
       break;
-    // exp3 isn't in this experiment block, could be in another
     default:
       label = "fallback content";
       break;
@@ -85,7 +85,7 @@ const App = () => {
   );
 };
 
-emitter.defineVariants("test", ["exp1", "exp2", "unused-exp3"]);
+emitter.defineVariants("test", ["exp1", "exp2", "exp3"]);
 emitter.setActiveVariant("test", "exp1");
 
 const rootElement = document.getElementById("root");
