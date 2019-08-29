@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode } from "react";
 import { render } from "react-dom";
+import { useExperiment } from "./hooks";
 import { emitter, experimentDebugger } from "@marvelapp/react-ab-test";
-
 import "./styles.css";
 
-// experimentDebugger.setDebuggerAvailable(true);
+// https://github.com/marvelapp/react-ab-test/issues/8
+// check ./hooks.ts for implementation spike
+
 experimentDebugger.enable();
 
 emitter.addPlayListener((experimentName: string, variantName: string) => {
@@ -18,77 +20,35 @@ emitter.addWinListener((experimentName: string, variantName: string) => {
   );
 });
 
-const useExperiment = (
-  experimentName: string,
-  defaultVariant?: string,
-  userIdentifier?: string
-): { experimentName: string; variant: string; emitWin: () => {} } => {
-  console.log("defaultVariant", defaultVariant);
-  const activeVariant = emitter.calculateActiveVariant(
-    experimentName,
-    userIdentifier,
-    defaultVariant
-  );
-  console.log("calc", activeVariant);
-  const [currentVariant, setCurrentVariant] = useState(activeVariant);
-
-  useEffect(() => {
-    // experiment mounted
-    console.log("hook", currentVariant);
-    emitter._emitPlay(experimentName, currentVariant);
-    emitter._incrementActiveExperiments(experimentName);
-
-    const variantListener = emitter.addActiveVariantListener(
-      experimentName,
-      (name: string, variant: string) => {
-        if (name === experimentName) {
-          setCurrentVariant(variant);
-        }
-      }
-    );
-
-    return () => {
-      variantListener.remove();
-      emitter._decrementActiveExperiments(experimentName);
-    };
-  }, [experimentName, currentVariant, defaultVariant]);
-
-  return {
-    experimentName: experimentName,
-    variant: currentVariant,
-    emitWin: () => emitter.emitWin(experimentName)
-  };
-};
+emitter.defineVariants("test", ["exp1", "exp2", "exp3"]);
+emitter.setActiveVariant("test", "exp1");
 
 const App = () => {
   // Hooks version of Experiments - references an experiment by name
   // and the variants supported within this context
   const { experimentName, variant, emitWin } = useExperiment("test", "exp3");
   console.log(experimentName, variant);
-  let label: string;
+  let experiment: ReactNode;
   switch (variant) {
     case "exp1":
-      label = "experiment 1";
+      experiment = <h1>Hello Experiment 1</h1>;
       break;
     case "exp2":
-      label = "experiment 2";
+      experiment = <h1>Hello Experiment 2</h1>;
       break;
     case "exp3":
     default:
-      label = "fallback content";
+      experiment = <h1>Hello Fallback</h1>;
       break;
   }
 
   return (
     <div className="App">
-      <h1>Hello {label}</h1>
+      {experiment}
       <button onClick={emitWin}>CTA</button>
     </div>
   );
 };
-
-emitter.defineVariants("test", ["exp1", "exp2", "exp3"]);
-emitter.setActiveVariant("test", "exp1");
 
 const rootElement = document.getElementById("root");
 render(<App />, rootElement);
