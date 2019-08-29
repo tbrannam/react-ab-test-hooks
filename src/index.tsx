@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ReactNode } from "react";
+import React, { useEffect, useState } from "react";
 import { render } from "react-dom";
 import { emitter, experimentDebugger } from "@marvelapp/react-ab-test";
 
@@ -22,6 +22,7 @@ const useExperiment = (experimentName: string, localVariants: string[]) => {
   const [currentVariant, setCurrentVariant] = useState(
     emitter.getActiveVariant(experimentName)
   );
+
   useEffect(() => {
     // experiment mounted
     console.log("hook", currentVariant);
@@ -34,7 +35,7 @@ const useExperiment = (experimentName: string, localVariants: string[]) => {
 
     const variantListener = emitter.addActiveVariantListener(
       experimentName,
-      (name, variant) => {
+      (name: string, variant: string) => {
         if (name === experimentName) {
           setCurrentVariant(variant);
         }
@@ -42,7 +43,6 @@ const useExperiment = (experimentName: string, localVariants: string[]) => {
     );
 
     return () => {
-      // could we remove the activevariantlistener
       variantListener.remove();
       emitter._decrementActiveExperiments(experimentName);
     };
@@ -69,7 +69,7 @@ const App = () => {
   );
 };
 
-emitter.defineVariants("test", ["exp1", "exp2"]);
+emitter.defineVariants("test", ["exp1", "exp2", "unused-exp3"]);
 emitter.setActiveVariant("test", "exp1");
 
 const rootElement = document.getElementById("root");
