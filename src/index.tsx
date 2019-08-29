@@ -23,7 +23,7 @@ emitter.addWinListener((experimentName: string, variantName: string) => {
 emitter.defineVariants("test", ["exp1", "exp2", "exp3"]);
 emitter.setActiveVariant("test", "exp1");
 
-const App: React.FC<void> = () => {
+const App: React.FC<{}> = () => {
   // Hooks version of Experiments - references an experiment by name
   // useExperiment(experimentName: string, defaultVariant?: string, userIdentifier?: string)
 
