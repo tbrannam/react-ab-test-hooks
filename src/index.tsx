@@ -20,12 +20,13 @@ emitter.addWinListener((experimentName: string, variantName: string) => {
 
 const useExperiment = (
   experimentName: string,
-  defaultVariant?: string
+  defaultVariant?: string,
+  userIdentifier?: string
 ): { experimentName: string; variant: string; emitWin: () => {} } => {
   console.log("defaultVariant", defaultVariant);
   const activeVariant = emitter.calculateActiveVariant(
     experimentName,
-    undefined,
+    userIdentifier,
     defaultVariant
   );
   console.log("calc", activeVariant);
@@ -72,6 +73,7 @@ const App = () => {
     case "exp2":
       label = "experiment 2";
       break;
+    case "exp3":
     default:
       label = "fallback content";
       break;
