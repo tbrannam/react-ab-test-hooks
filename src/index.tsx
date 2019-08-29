@@ -26,6 +26,9 @@ const useExperiment = (experimentName: string, localVariants: string[]) => {
   useEffect(() => {
     // experiment mounted
     console.log("hook", currentVariant);
+    // should emitplay be called if the caller
+    // doesn't have one of these variants?
+    // if not - we don't need to pass localVariants
     if (localVariants.indexOf(currentVariant) !== -1) {
       console.log("play");
       emitter._emitPlay(experimentName, currentVariant);
@@ -59,7 +62,20 @@ const App = () => {
   // Hooks version of Experiments - references an experiment by name
   // and the variants supported within this context
   const { variant, emitWin } = useExperiment("test", ["exp1", "exp2"]);
-  const label = variant === "exp1" ? "Experiment 1" : "Experiment 2";
+  // const label = variant === "exp1" ? "Experiment 1" : "Experiment 2";
+  let label: string;
+  switch (variant) {
+    case "exp1":
+      label = "experiment 1";
+      break;
+    case "exp2":
+      label = "experiment 2";
+      break;
+    // exp3 isn't in this experiment block, could be in another
+    default:
+      label = "fallback content";
+      break;
+  }
 
   return (
     <div className="App">
