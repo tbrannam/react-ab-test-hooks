@@ -8,7 +8,7 @@ type SelectVariantType = <T>(
 
 interface ExperimentHookResult {
   experimentName: string;
-  variant: string;
+  currentVariant: string;
   emitWin: () => {};
   selectVariant: SelectVariantType;
 }
@@ -25,10 +25,9 @@ const selectVariant = (currentVariant: string) => <T>(
 
 export const useExperiment = (
   experimentName: string,
-  defaultVariant?: string,
-  userIdentifier?: string
+  userIdentifier?: string,
+  defaultVariant?: string
 ): ExperimentHookResult => {
-  // useState(experimentName);
   const [currentVariant, setCurrentVariant] = useState(
     emitter.calculateActiveVariant(
       experimentName,
@@ -60,7 +59,7 @@ export const useExperiment = (
 
   return {
     experimentName,
-    variant: currentVariant,
+    currentVariant,
     emitWin: () => emitter.emitWin(experimentName),
     selectVariant: selectVariant(currentVariant)
   };

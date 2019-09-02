@@ -25,8 +25,10 @@ emitter.setActiveVariant("test", "exp1");
 
 const App: React.FC<{}> = () => {
   // Hooks version of Experiments - references an experiment by name
-  // useExperiment(experimentName: string, defaultVariant?: string, userIdentifier?: string)
+  // useExperiment(experimentName: string, userIdentifier?: string, defaultVariant?: string)
 
+  // should useExperiment's parameters match the order of calculateActiveVariant?
+  // is userIdentifier or defaultVariant more commonly used?
   const { selectVariant, emitWin } = useExperiment("test");
 
   const variant = selectVariant(
