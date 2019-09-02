@@ -1,26 +1,26 @@
 import { useEffect, useState } from "react";
 import { emitter } from "@marvelapp/react-ab-test";
 
+type SelectVariantType = <T>(
+  variants: Record<string, T>,
+  fallback?: T
+) => T | undefined;
+
 interface ExperimentHookResult {
   experimentName: string;
   variant: string;
   emitWin: () => {};
-  selectVariant: <T>(
-    variants: Record<string, T>,
-    fallback?: T
-  ) => T | undefined;
+  selectVariant: SelectVariantType;
 }
 
-const selectVariant = (experimentName: string) => <T>(
+const selectVariant = (currentVariant: string) => <T>(
   variants: Record<string, T>,
   fallback?: T
 ) => {
-  if (Object.keys(variants).indexOf(experimentName) !== -1) {
-    return variants[experimentName];
-  } else if (fallback !== undefined) {
-    return fallback;
+  if (Object.keys(variants).indexOf(currentVariant) !== -1) {
+    return variants[currentVariant];
   }
-  return undefined;
+  return fallback;
 };
 
 export const useExperiment = (
