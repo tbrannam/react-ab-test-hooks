@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { render } from "react-dom";
 import { useExperiment } from "./hooks";
 import { emitter, experimentDebugger } from "@marvelapp/react-ab-test";
@@ -27,25 +27,19 @@ const App: React.FC<{}> = () => {
   // Hooks version of Experiments - references an experiment by name
   // useExperiment(experimentName: string, defaultVariant?: string, userIdentifier?: string)
 
-  const { experimentName, variant, emitWin } = useExperiment("test");
-  console.log("useExperiment result: ", experimentName, variant);
-  let experiment: ReactNode;
-  switch (variant) {
-    case "exp1":
-      experiment = <h1>Hello Experiment 1</h1>;
-      break;
-    case "exp2":
-      experiment = <h1>Hello Experiment 2</h1>;
-      break;
-    case "exp3":
-    default:
-      experiment = <h1>Hello Fallback</h1>;
-      break;
-  }
+  const { selectVariant, emitWin } = useExperiment("test");
+
+  const variant = selectVariant(
+    {
+      exp1: <h1>Hello Experiment 1</h1>,
+      exp2: <h1>Hello Experiment 2</h1>
+    },
+    <h1>Hello Fallback</h1>
+  );
 
   return (
     <div className="App">
-      {experiment}
+      {variant}
       <button onClick={emitWin}>CTA</button>
     </div>
   );

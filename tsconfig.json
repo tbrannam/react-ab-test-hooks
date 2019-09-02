@@ -5,6 +5,7 @@
     "compilerOptions": {
         "esModuleInterop": true,
         "target": "es2018",
+        "strict": true,
         "lib": [
             "dom",
             "es2015"

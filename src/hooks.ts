@@ -5,14 +5,30 @@ interface ExperimentHookResult {
   experimentName: string;
   variant: string;
   emitWin: () => {};
+  selectVariant: <T>(
+    variants: Record<string, T>,
+    fallback?: T
+  ) => T | undefined;
 }
+
+const selectVariant = (experimentName: string) => <T>(
+  variants: Record<string, T>,
+  fallback?: T
+) => {
+  if (Object.keys(variants).indexOf(experimentName) !== -1) {
+    return variants[experimentName];
+  } else if (fallback !== undefined) {
+    return fallback;
+  }
+  return undefined;
+};
 
 export const useExperiment = (
   experimentName: string,
   defaultVariant?: string,
   userIdentifier?: string
 ): ExperimentHookResult => {
-  useState(experimentName);
+  // useState(experimentName);
   const [currentVariant, setCurrentVariant] = useState(
     emitter.calculateActiveVariant(
       experimentName,
@@ -45,6 +61,7 @@ export const useExperiment = (
   return {
     experimentName,
     variant: currentVariant,
-    emitWin: () => emitter.emitWin(experimentName)
+    emitWin: () => emitter.emitWin(experimentName),
+    selectVariant: selectVariant(currentVariant)
   };
 };
